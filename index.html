@@ -1,26 +1,98 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Google Drive Video Player</title>
+  <title>Intro + Google Drive Player</title>
   <style>
-    body {
-      background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    iframe {
-      border: none;
+
+    html, body {
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    video, iframe {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       width: 80vw;
-      height: 45vw; /* 16:9 aspect ratio */
+      height: 45vw;
       max-width: 960px;
       max-height: 540px;
+      border: none;
+      object-fit: cover;
+      opacity: 1;
+      transition: opacity 1s ease;
+    }
+
+    #iframe {
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .fade-out {
+      opacity: 0 !important;
+    }
+
+    .fade-in {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      z-index: 2 !important;
     }
   </style>
 </head>
 <body>
-  <!-- Replace FILE_ID below with your actual Google Drive file ID -->
-  <iframe src="https://drive.google.com/file/d/1G4CO4gl2O_iMObuhsDngNyJLi2HNqAHC/preview" allow="autoplay" allowfullscreen></iframe>
+
+  <div class="container">
+    <!-- Intro Video -->
+    <video id="intro" autoplay muted playsinline>
+      <source src="intro.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+
+    <!-- Google Drive iframe -->
+    <iframe
+      id="iframe"
+      src="https://drive.google.com/file/d/1G4CO4gl2O_iMObuhsDngNyJLi2HNqAHC/preview"
+      allow="autoplay"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+  <script>
+    const video = document.getElementById("intro");
+    const iframe = document.getElementById("iframe");
+
+    function transitionToIframe() {
+      video.classList.add("fade-out");
+
+      setTimeout(() => {
+        iframe.classList.add("fade-in");
+      }, 1000); // after video fades out
+    }
+
+    // When video ends
+    video.addEventListener("ended", transitionToIframe);
+
+    // Fallback: if 'ended' doesn't trigger (mobile bug), use timeout
+    setTimeout(() => {
+      if (!iframe.classList.contains("fade-in")) {
+        transitionToIframe();
+      }
+    }, 10000); // fallback after 10 sec
+  </script>
+
 </body>
 </html>
